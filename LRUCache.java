@@ -1,48 +1,44 @@
 // Online Java Compiler
 // Use this editor to write, compile and run your Java code online
-
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
+import java.util.*;
+public class Main {
+  public static void main(String[] args) {
+      System.out.println("Hello, World!");
             LRUCache lruCache = new LRUCache(5);
             lruCache.add(1);
             lruCache.add(2);
             lruCache.add(3);
             lruCache.add(4);
+            int val1 = lruCache.get(1);
+            System.out.println(val1);
             lruCache.add(5);
-            int value = lruCache.get(1);
             lruCache.add(6);
-            int value = lruCache.get(2);
+            int val = lruCache.get(1);
             System.out.println(val);
-    }
-}
+  }
 
-// Online Java Compiler
-// Use this editor to write, compile and run your Java code online
+  static class Node{
+    int val;
+    Node next;
+    Node prev;
 
-public class Node{
-	int val,
-	Node next;
-	Node prev;
+    Node(int val){
+      this.val = val;
+      }
 
-	Node(int val){
-	  this.val = val;
-    }
+      Node(int val, Node next, Node prev){
+          this.val = val;
+          this.next = next;
+          this.prev = prev;
+      }
+  }
 
-    Node(int val, Node next, Node prev){
-    	  this.val = val;
-    	  this.next = next;
-    	  this.prev = prev;
-    }
-}
+  interface Cache{
+    void add(int val);
+    int get(int val);
+  }
 
-class interface Cache{
-	abstract void add(int val);
-	abstract int get(int val);
-}
-
-
-public class LRUCache implements Cache{
+  public static class LRUCache implements Cache{
     HashMap<Integer, Node> map = new HashMap<Integer, Node>();
     int size;
     Node head;
@@ -51,19 +47,17 @@ public class LRUCache implements Cache{
     LRUCache(int size){
         this.size = size;
     }
-    
+
     public void add(int val){
         if(head == null){
             Node node = new Node(val);
             head = node;
             tail = node;
             map.put(val, node);
-            return;
         }else{
             if(map.containsKey(val)){
                 Node node = map.get(val);
                 shiftAtEnd(node);
-                return;
             }else{
                 
                 //1,2,3,4,5
@@ -78,19 +72,21 @@ public class LRUCache implements Cache{
                 
             }
         }
+        System.out.println("Adding " + val );
     }
     
     public int get(int val){
-        if(map.contains(val)){
+        if(map.containsKey(val)){
             shiftAtEnd(map.get(val));
-            return map.get(val);
+            return map.get(val).val;
         }else{
-            throw Error("Not found");
+            System.out.println("Not found " + val);
+            return -1; //-1 mean doesn't exists
         }
     }
-    
+
     public void deleteNode(Node node){
-        map.delete(node.val);
+        map.remove(node.val);
         if(node.prev == null){ //first node in the list
             head = head.next;
         }else if(node.next == null){ //last node
@@ -101,7 +97,7 @@ public class LRUCache implements Cache{
             Node pre = node.prev;
             Node next = node.next;
             pre.next = next;
-            next.prev = prev;
+            next.prev = pre;
         }
     }
 
@@ -115,26 +111,27 @@ public class LRUCache implements Cache{
         Node prev = node.prev;
         Node next = node.next;
         
-        if(next != null){
+        if(next != null && prev != null){
             prev.next = next;
-        }
-        
-        if(prev != null){
             next.prev = prev;
         }
         
         tail.next = node;
+        node.prev = tail;
+        
         tail = node;
     }
     
     public void deleteAtFirst(){
+        map.remove(head.val);
         if(head.next == null){
             head = null;
-            map.delete(head);
         }else{
-            Node next = head.next
+            Node next = head.next;
             head = next;
             head.prev = null;
         }
     }
+
+  }
 }
